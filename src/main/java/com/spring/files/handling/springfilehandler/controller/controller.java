@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +22,7 @@ public class controller {
     @RequestMapping(value = "/file")
     ResponseEntity<ByteArrayResource> getFile() throws IOException {
         byte[] fileBytes = loadEmployeesWithClassPathResource();
+        readImagesUsingBufferedImageAndBufferedReaderAndWriter();
         ByteArrayResource resource = new ByteArrayResource(fileBytes);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -55,6 +56,24 @@ public class controller {
 
 
         return data;
+    }
+
+    public void readImagesUsingBufferedImageAndBufferedReaderAndWriter(){
+        try {
+            BufferedImage bufferedImage = ImageIO.read(new File("src/main/resources/static/images/amazing-city-picture.jpg"));
+            for (int y = 0; y < bufferedImage.getHeight(); y++){
+                for (int x = 0; x < bufferedImage.getWidth(); x++){
+                    if ((x % 2) == 0){
+                        bufferedImage.setRGB(x,y,new Color(0,102,255).getRGB());
+                    }
+                }
+            }
+            File outputImage = new File("src/main/resources/static/images/editedImage.jpg");
+            ImageIO.write(bufferedImage,"jpg",outputImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
